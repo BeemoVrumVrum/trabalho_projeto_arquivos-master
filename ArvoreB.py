@@ -30,6 +30,10 @@ class ArvoreB:
         while inicio <= fim:
             qtd_operacoes[0] += 1
             meio = (inicio + fim) // 2
+            
+            if no.chaves[meio] is None:  # Validação para evitar erros
+                break
+            
             if no.chaves[meio] == chave:
                 return meio  # encontrou
             elif no.chaves[meio] > chave:
@@ -38,6 +42,7 @@ class ArvoreB:
                 inicio = meio + 1
 
         return inicio  # não encontrou
+
 
     def localiza_chaveArvoreB(self, chave, qtd_operacoes):
         no = self.raiz
