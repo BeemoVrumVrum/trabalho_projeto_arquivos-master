@@ -12,7 +12,7 @@ class ArvoreB:
         self.raiz = self.cria_no_ArvoreB()
 
     def incrementar_operacoes(self, qtd_operacoes):
-        qtd_operacoes[0] += 1  # Incrementa a contagem de operações
+        qtd_operacoes[0] += 1
 
     def cria_no_ArvoreB(self):
         return NoB(self.ordem)
@@ -127,29 +127,29 @@ class ArvoreB:
         self.adiciona_chave_recursivo_ArvoreB(no, None, chave, qtd_operacoes)
 
     def removeChaveB(self, chave, qtd_operacoes):
-        # Localiza o nó onde a chave pode estar
+        # localiza o nó onde a chave pode estar
         no = self.localiza_no_ArvoreB(chave, qtd_operacoes)
         if no is None:
-            return False  # Chave não encontrada
+            return False  # não encontrado
         
         i = self.pesquisa_binaria_ArvoreB(no, chave, qtd_operacoes)
         
-        # Caso 1: A chave está em um nó folha
+        # a chave está em um nó folha
         if no.filhos[i] is None:
             return self.remove_da_folha(no, i, qtd_operacoes)
         
-        # Caso 2: A chave está em um nó interno
+        # a chave está em um nó interno
         return self.remove_de_no_interno(no, i, qtd_operacoes)
 
     def remove_da_folha(self, no, i, qtd_operacoes):
         qtd_operacoes[0] += 1
-        # Remover a chave diretamente
+        # remover a chave diretamente
         for j in range(i, no.total - 1):
             no.chaves[j] = no.chaves[j + 1]
         no.chaves[no.total - 1] = None
         no.total -= 1
         
-        # Verificar se o nó ficou com menos de ordem // 2 chaves
+        # verifica se o nó ficou com menos de ordem // 2 chaves
         if no != self.raiz and no.total < self.ordem // 2:
             return self.balancear_remocao(no, qtd_operacoes)
         
@@ -157,26 +157,26 @@ class ArvoreB:
 
     def remove_de_no_interno(self, no, i, qtd_operacoes):
         qtd_operacoes[0] += 1
-        # Substitui a chave com o sucessor ou predecessor
+        # substitui a chave com o sucessor ou predecessor
         if no.filhos[i + 1] is not None:
-            # Substitui com o sucessor (menor chave à direita)
+            # substitui com o sucessor (menor chave à direita)
             sucessor = self.encontrar_sucessor(no.filhos[i + 1])
             no.chaves[i] = sucessor
             return self.removeChaveB(sucessor, qtd_operacoes)  # Remove a chave duplicada
         elif no.filhos[i] is not None:
-            # Substitui com o predecessor (maior chave à esquerda)
+            # substitui com o predecessor (maior chave à esquerda)
             predecessor = self.encontrar_predecessor(no.filhos[i])
             no.chaves[i] = predecessor
             return self.removeChaveB(predecessor, qtd_operacoes)  # Remove a chave duplicada
         
     def encontrar_sucessor(self, no):
-        # Encontra o sucessor (menor chave na subárvore à direita)
+        # encontra o sucessor (menor chave na subárvore à direita)
         while no.filhos[0] is not None:
             no = no.filhos[0]
         return no.chaves[0]
     
     def encontrar_predecessor(self, no):
-        # Encontra o predecessor (maior chave na subárvore à esquerda)
+        # encontra o predecessor (maior chave na subárvore à esquerda)
         while no.filhos[no.total] is not None:
             no = no.filhos[no.total]
         return no.chaves[no.total - 1]

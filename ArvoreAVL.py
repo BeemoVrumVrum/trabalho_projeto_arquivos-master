@@ -24,7 +24,7 @@ class ArvoreAVL:
     def alturaAVL(self, no):
         return no.alturaAVL if no else 0
 
-    def fator_balanceamento_ArvoreAVL(self, no, qtd_operacoes):
+    def fb(self, no, qtd_operacoes):
         self.incrementar_operacoes_ArvoreAVL(qtd_operacoes)
         esquerda = no.esquerda.alturaAVL if no.esquerda else 0
         direita = no.direita.alturaAVL if no.direita else 0
@@ -34,7 +34,7 @@ class ArvoreAVL:
         no = self.raiz
 
         while no:
-            self.incrementar_operacoes_ArvoreAVL(qtd_operacoes)  # Passa e modifica qtd_operacoes diretamente
+            self.incrementar_operacoes_ArvoreAVL(qtd_operacoes)  
             if valor > no.valor:
                 if no.direita:
                     no = no.direita
@@ -58,25 +58,29 @@ class ArvoreAVL:
                 no.esquerda = novo
             self.balancearAVL(no, qtd_operacoes)
 
-        return qtd_operacoes  # Retorna a lista com qtd_operacoes
-
 
     def balancearAVL(self, no, qtd_operacoes):
         while no:
             self.incrementar_operacoes_ArvoreAVL(qtd_operacoes)
             no.alturaAVL = self.maxAVL(self.alturaAVL(no.esquerda), self.alturaAVL(no.direita)) + 1
-            fator = self.fator_balanceamento_ArvoreAVL(no, qtd_operacoes)
+            fator = self.fb(no, qtd_operacoes)
 
-            if fator > 1:  # Mais pesado à esquerda
-                if self.fator_balanceamento_ArvoreAVL(no.esquerda, qtd_operacoes) > 0:
-                    self.rsd(no, qtd_operacoes)  # Rotação simples direita
+            if fator > 1:  
+                # árvore mais pesada para esquerda
+                # rotação para a direita
+                if self.fb(no.esquerda, qtd_operacoes) > 0:
+                    self.rsd(no, qtd_operacoes)  #rotação simples a direita, pois o FB do filho tem sinal igual
                 else:
-                    self.rdd(no, qtd_operacoes)  # Rotação dupla direita
-            elif fator < -1:  # Mais pesado à direita
-                if self.fator_balanceamento_ArvoreAVL(no.direita, qtd_operacoes) < 0:
-                    self.rse(no, qtd_operacoes)  # Rotação simples esquerda
+                    self.rdd(no, qtd_operacoes)  #rotação dupla a direita, pois o FB do filho tem sinal diferente
+            elif fator < -1:  
+                #árvore mais pesada para a direita
+                #rotação para a esquerda
+                if self.fb(no.direita, qtd_operacoes) < 0:
+                    #rotação simples a esquerda, pois o FB do filho tem sinal igual
+                    self.rse(no, qtd_operacoes)  
                 else:
-                    self.rde(no, qtd_operacoes)  # Rotação dupla esquerda
+                    #rotação dupla a esquerda, pois o FB do filho tem sinal diferente
+                    self.rde(no, qtd_operacoes)  
 
             no = no.pai
 
@@ -147,30 +151,29 @@ class ArvoreAVL:
         return self.rsd(no, qtd_operacoes)
 
     def removerAVL(self, valor, qtd_operacoes):
-        # Localiza o nó com o valor a ser removido
         no = self.localizarAVL(self.raiz, valor, qtd_operacoes)
         if not no:
-            return qtd_operacoes  # Se o nó não for encontrado, retorna a lista de operações
+            return
 
         self.incrementar_operacoes_ArvoreAVL(qtd_operacoes)
         pai = no.pai
 
-        if not no.esquerda and not no.direita:  # Caso 1: Nó sem filhos
-            if not pai:  # Caso especial: raiz
+        # não possui filhos
+        if not no.esquerda and not no.direita:
+            if not pai:
                 self.raiz = None
             elif pai.esquerda == no:
                 pai.esquerda = None
             else:
                 pai.direita = None
-        elif no.esquerda and no.direita:  # Caso 2: Nó com dois filhos
-            # Encontra o sucessor (o menor nó à direita)
+        elif no.esquerda and no.direita:  # possui nó na esquerda e direita
+            # procura a folha para adicionar a esquerda lá e balancear depois
             folha = no.direita
             while folha.esquerda:
                 folha = folha.esquerda
             folha.esquerda = no.esquerda
             no.esquerda.pai = folha
 
-            # Ajuste dos ponteiros do pai
             if not pai:
                 self.raiz = no.direita
                 self.raiz.pai = None
@@ -180,7 +183,7 @@ class ArvoreAVL:
                 pai.esquerda = no.direita
             no.direita.pai = pai
 
-        else:  # Caso 3: Nó com apenas um filho
+        else:  # possui nó apenas na esquerda ou apenas na direita
             filho = no.esquerda if no.esquerda else no.direita
             if not pai:
                 self.raiz = filho
@@ -190,7 +193,4 @@ class ArvoreAVL:
                 pai.direita = filho
             filho.pai = pai
 
-        # Balanceamento após remoção
         self.balancearAVL(pai if pai else self.raiz, qtd_operacoes)
-
-        return qtd_operacoes  # Retorna o número atualizado de operações

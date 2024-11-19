@@ -17,7 +17,7 @@ class ArvoreRN:
 
     @staticmethod
     def incrementar_operacoes(self, qtd_operacoes):
-        qtd_operacoes[0] += 1  # Incrementa a contagem de operações
+        qtd_operacoes[0] += 1
 
     def vaziaRN(self):
         return self.raiz == self.nulo
